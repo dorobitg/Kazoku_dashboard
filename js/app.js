@@ -111,7 +111,7 @@
   function readConfig() {
     var c = {};
     try { c = JSON.parse(localStorage.getItem('kazoku.cfg') || '{}') || {}; } catch (e) { c = {}; }
-    var h = location.hash.replace(/^#/, '');
+    var h = (location.hash.replace(/^#/, '') + '&' + location.search.replace(/^\?/, '')).replace(/^&|&$/g, '');
     if (h) {
       var changed = false;
       h.split('&').forEach(function (kv) {
@@ -122,6 +122,7 @@
       });
       if (changed) { try { localStorage.setItem('kazoku.cfg', JSON.stringify(c)); } catch (e) {} }
     }
+    if (window.KAZOKU_API) c.api = window.KAZOKU_API;
     return c;
   }
 
@@ -171,7 +172,15 @@
 
   var errors = {};
   var lastOk = null;
+  var inSetup = false;
   function setStatus(source, err) {
+    if (err && err.message === 'unauthorized' && !inSetup && !DEMO) {
+      // Token desat incorrecte o canviat: es torna a demanar.
+      try { localStorage.removeItem('kazoku.cfg'); } catch (e) {}
+      cfg.k = null;
+      showSetup();
+      return;
+    }
     if (err) errors[source] = err.message;
     else { delete errors[source]; lastOk = new Date(); }
     var keys = Object.keys(errors);
@@ -625,15 +634,34 @@
   /* ------------------------------------------------------------------ */
 
   function showSetup() {
+    inSetup = true;
     $('app').className = 'app hidden';
+    var needApi = !cfg.api;
     var base = location.href.replace(/[#?].*$/, '');
-    openOverlay('<div class="setup"><h1>Kazoku</h1><p>Falta connectar el dashboard amb el teu Apps Script.</p>' +
-      '<ol><li>Desplega <code>apps-script/Code.gs</code> com a aplicació web.</li>' +
-      '<li>Obre aquesta adreça (un sol cop a cada dispositiu):<br><code>' + esc(base) +
-      '#api=URL_DE_L_APPS_SCRIPT&amp;k=EL_TEU_TOKEN</code></li></ol>' +
-      '<p><a href="' + esc(base) + '?demo">Veure la demostració</a></p></div>', false);
+    openOverlay('<form id="setup-form" class="setup" autocomplete="off"><h1>Kazoku</h1>' +
+      '<p>Escriu el token per connectar aquest dispositiu. Només cal fer-ho un cop.</p>' +
+      (needApi ? '<label>Adreça de l\'Apps Script</label><input id="setup-api" type="url" placeholder="https://script.google.com/macros/s/.../exec">' : '') +
+      '<label>Token</label><input id="setup-k" type="text" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="kz-...">' +
+      '<button type="submit">Connecta</button>' +
+      '<p class="setup-err" id="setup-err"></p>' +
+      '<p><a href="' + esc(base) + '?demo">Veure la demostració</a></p></form>', false);
     clearTimeout(overlayTimer);
-    $('overlay').onclick = null;
+    on($('setup-form'), 'submit', function (e) {
+      e.preventDefault();
+      var k = $('setup-k').value.replace(/\s+/g, '');
+      var a = needApi ? $('setup-api').value.replace(/\s+/g, '') : cfg.api;
+      if (!k || !a) { $('setup-err').textContent = 'Falta omplir algun camp.'; return; }
+      cfg.k = k; cfg.api = a;
+      $('setup-err').textContent = 'Comprovant…';
+      api('ping', null, function (err) {
+        if (err) {
+          $('setup-err').textContent = err.message === 'unauthorized' ? 'Token incorrecte. Revisa majúscules i guions.' : 'No s\'ha pogut connectar (' + err.message + ').';
+          return;
+        }
+        try { localStorage.setItem('kazoku.cfg', JSON.stringify({ api: a, k: k })); } catch (x) {}
+        location.href = base;
+      });
+    });
   }
 
   /* ------------------------------------------------------------------ */

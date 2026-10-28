@@ -298,6 +298,17 @@ body.night .photo-img.show { opacity: 0.35; }
 .setup p, .setup li { font-size: 17px; line-height: 1.55; }
 .setup code { font-size: 14px; background: var(--paper-2); padding: 2px 6px; border-radius: 3px; word-break: break-all; }
 .setup a { color: var(--shu); font-weight: 700; }
+.setup label { display: block; font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--sumi-2); margin-top: 18px; }
+.setup input {
+  display: block; width: 100%; margin-top: 6px; padding: 10px 2px; font-size: 20px;
+  background: transparent; border: 0; border-bottom: 2px solid var(--sumi); border-radius: 0;
+  -webkit-user-select: text; user-select: text; outline: none; -webkit-appearance: none;
+}
+.setup button[type=submit] {
+  margin-top: 22px; padding: 12px 28px; border-radius: 6px;
+  background: var(--shu); color: var(--paper-2); font-size: 18px; font-weight: 700;
+}
+.setup-err { color: var(--shu); font-weight: 700; min-height: 1.5em; }
 
 /* ---------- Vertical (iPad girat) ---------- */
 
