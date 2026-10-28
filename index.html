@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Kazoku">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="theme-color" content="#DBD0B8">
+  <link rel="apple-touch-icon" href="img/icon-180.png">
+  <link rel="icon" href="img/icon-180.png">
+  <title>Kazoku</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div id="app" class="app">
+  <header class="top">
+    <div id="clock" class="clock">--:--</div>
+    <div class="date-block">
+      <div id="seal" class="seal">日</div>
+      <div>
+        <div id="date-main" class="date-main"></div>
+        <div id="date-sub" class="date-sub"></div>
+      </div>
+    </div>
+    <div id="weather" class="weather"></div>
+  </header>
+
+  <main class="grid">
+    <section class="panel cal">
+      <div class="panel-head">
+        <h2>Calendari</h2><span class="kanji">暦</span>
+        <div id="cal-tabs" class="tabs">
+          <button data-view="day" class="on">Dia</button>
+          <button data-view="week">Setmana</button>
+          <button data-view="month">Mes</button>
+        </div>
+      </div>
+      <div id="cal-body" class="cal-body"></div>
+    </section>
+
+    <section class="panel tasks">
+      <div class="panel-head">
+        <h2>Tasques</h2><span class="kanji">用</span>
+        <span id="task-count" class="meta"></span>
+      </div>
+      <form id="task-form" class="task-form" autocomplete="off">
+        <input id="task-input" type="text" maxlength="200" placeholder="Afegeix una tasca" enterkeyhint="done">
+        <button type="submit" aria-label="Afegeix">+</button>
+      </form>
+      <ul id="task-list" class="task-list"></ul>
+    </section>
+
+    <section class="panel side">
+      <div id="photo" class="photo">
+        <div id="photo-cap" class="photo-cap hidden"></div>
+      </div>
+      <div class="panel-head">
+        <h2>Lectures</h2><span class="kanji">報</span>
+        <span id="news-dots" class="dots"></span>
+      </div>
+      <div class="news">
+        <div id="news-list" class="news-list"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer id="status" class="status"><i></i>Kazoku</footer>
+</div>
+
+<div id="overlay" class="overlay hidden"></div>
+
+<script src="js/demo.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
