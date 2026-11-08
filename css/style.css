@@ -239,8 +239,49 @@ button { background: none; border: 0; padding: 0; cursor: pointer; -webkit-appea
 
 /* ---------- Foto + lectures ---------- */
 
-.side { display: grid; grid-template-rows: 1.15fr auto 1fr; min-height: 0; }
+.side { display: grid; grid-template-rows: auto minmax(0, 1fr) auto minmax(0, 0.85fr); min-height: 0; }
 .side .panel-head { margin-top: 14px; }
+
+/* Vídeo en directe */
+.live { position: relative; height: 0; padding-bottom: 56.25%; margin-bottom: 12px; background: #0E100F; border-radius: 3px; overflow: hidden; }
+.live iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+.live-badge {
+  position: absolute; top: 8px; left: 8px; z-index: 2; pointer-events: none;
+  background: var(--shu); color: var(--paper-2); border-radius: 3px;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.1em; padding: 3px 6px 2px;
+}
+.live-off {
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  color: #6A6858; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+}
+.live-off b { font: 34px/1.2 var(--display); color: #A8402F; font-weight: 400; }
+
+/* Preu de la llum (PVPC) */
+.energy {
+  --e-red: #D63F2A; --e-yel: #E0AE3A; --e-grn: #6F9C55;
+  flex: 0 0 auto; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line-2);
+}
+body.night .energy { --e-red: #A8402F; --e-yel: #9C7E35; --e-grn: #4E6E40; }
+.e-head { display: flex; align-items: baseline; }
+.e-head h3 { margin: 0; font: 16px/1 var(--display); }
+.e-head .kanji { font: 13px/1 var(--display); color: var(--shu); margin-left: 6px; }
+.e-now { margin-left: auto; font-size: 13px; color: var(--sumi-2); font-weight: 500; }
+.e-now b { font: 20px/1 var(--display); color: var(--sumi); font-weight: 400; margin-left: 4px; }
+.e-now i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 6px; vertical-align: 1px; }
+.e-strip { display: flex; height: 14px; margin-top: 8px; border-radius: 2px; overflow: hidden; }
+.e-strip span { flex: 1 1 0; margin-right: 1px; position: relative; }
+.e-strip span:last-child { margin-right: 0; }
+.e-strip span.past { opacity: 0.35; }
+.e-strip span.now { box-shadow: inset 0 0 0 2px var(--sumi); }
+.e-ticks { display: flex; justify-content: space-between; font-size: 10px; color: var(--sumi-2); margin-top: 2px; font-weight: 700; }
+.e-legend { margin-top: 6px; }
+.e-row { display: flex; align-items: baseline; font-size: 13px; line-height: 1.55; white-space: nowrap; }
+.e-row i { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 7px; flex: 0 0 auto; }
+.e-row .l { width: 46px; flex: 0 0 auto; font-weight: 700; }
+.e-row .h { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.e-row .p { margin-left: 8px; font-weight: 700; }
+.e-red { background: var(--e-red); } .e-yel { background: var(--e-yel); } .e-grn { background: var(--e-grn); }
 .photo { position: relative; min-height: 0; overflow: hidden; border-radius: 3px; background: var(--paper-2); }
 .photo-img {
   position: absolute; top: 0; left: 0; right: 0; bottom: 0;
@@ -318,15 +359,20 @@ body.night .photo-img.show { opacity: 0.35; }
   .weather { grid-column: 1 / 3; }
   .w-days { margin-left: auto; }
   .clock { font-size: 104px; }
-  .grid { grid-template-columns: 1fr 1fr; grid-template-rows: 1.25fr 1fr; }
+  .grid { grid-template-columns: 1fr 1fr; grid-template-rows: minmax(0, 1fr) auto; }
   .panel:nth-child(2) { padding-right: 0; }
   .side {
     grid-column: 1 / 3; padding: 16px 0 0; margin-top: 16px;
     border-left: 0 !important; border-top: 1px solid var(--line-2);
     grid-template-columns: 1fr 1fr; grid-template-rows: auto 1fr; grid-column-gap: 22px;
   }
-  .side .photo { grid-row: 1 / 3; }
-  .side .panel-head { margin-top: 0; }
+  .side { grid-template-areas: "live photo" "head head" "news news"; grid-template-rows: auto auto auto; }
+  .side .live { margin-bottom: 0; }
+  .side .news-list { height: 118px; }
+  .side .live { grid-area: live; }
+  .side .photo { grid-area: photo; }
+  .side .panel-head { grid-area: head; margin-top: 0; }
+  .side .news { grid-area: news; }
 }
 
 /* ---------- Mòbil (afegir tasques des del telèfon) ---------- */
@@ -346,5 +392,11 @@ body.night .photo-img.show { opacity: 0.35; }
   .task-list { max-height: none; }
   .side { display: block; }
   .photo { height: 220px; }
+  .live { margin-top: 0; }
   .news-list { height: 240px; }
+}
+
+@media (orientation: portrait) and (min-width: 641px) {
+  .side.no-live { grid-template-areas: "photo head" "photo news"; grid-template-rows: auto minmax(0, 1fr); }
+  .side.no-live .photo { min-height: 260px; }
 }

@@ -17,6 +17,7 @@ iPad / mòbils ──► GitHub Pages (aquest repositori: HTML, CSS, JS)
               ├─ Google Tasks      (llegir, afegir, marcar, esborrar)
               ├─ Google Drive      (carpeta de fotos)
               ├─ Open-Meteo        (temps, sense clau)
+              ├─ Red Eléctrica     (PVPC, sense clau)
               └─ Canals RSS/Atom
 ```
 
@@ -86,6 +87,8 @@ Els mòbils de la família poden fer servir la mateixa adreça per afegir i marc
 | Temps | cada 30 min | Kanji: 晴 serè, 曇 núvols, 雨 pluja, 雪 neu, 雷 tempesta, 霧 boira, 夜 nit serena |
 | Foto | segons `PHOTO_ROTATE_HOURS` | Toca la foto per veure-la a pantalla completa |
 | Lectures | cada 30 min | Gira cada 20 s. Toca un titular per llegir-ne el resum |
+| Vídeo en directe | continu | YouTube, sense so. S'atura de nit. Es canvia a `js/config.js` (`KAZOKU_VIDEO`) |
+| Preu de la llum | cada 30 min | PVPC 2.0TD de Red Eléctrica. Terços del dia: verd barat, groc mig, vermell car |
 
 - **Mode nit** de 23:00 a 7:00: tons foscos i foto atenuada. El primer toc el desperta 5 minuts.
 - **Recàrrega preventiva** cada 6 hores, per evitar fuites de memòria del Safari d'iOS 12.

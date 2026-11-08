@@ -92,6 +92,15 @@
         ] };
       case 'photo':
         return { url: 'img/placeholder.svg', taken: '2024:08:14 10:22:01', period: Math.floor(Date.now() / 864e5), hours: 24 };
+      case 'energy':
+        // Corba típica d'un dia de tardor (€/kWh)
+        var curve = [0.112, 0.104, 0.098, 0.094, 0.093, 0.097, 0.118, 0.142, 0.151, 0.138, 0.121, 0.109,
+                     0.104, 0.102, 0.106, 0.117, 0.133, 0.162, 0.198, 0.214, 0.207, 0.181, 0.149, 0.126];
+        var order = curve.map(function (p, h) { return { h: h, p: p }; }).sort(function (a, b) { return a.p - b.p; });
+        var tier = {};
+        order.forEach(function (x, i) { tier[x.h] = i < 8 ? 0 : i < 16 ? 1 : 2; });
+        return { day: ymd(0), unit: '€/kWh', source: 'demo',
+                 hours: curve.map(function (p, h) { return { h: h, p: p, t: tier[h] }; }) };
     }
     throw new Error('unknown action');
   };

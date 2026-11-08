@@ -71,6 +71,7 @@ function route_(p) {
     case 'weather':    return getWeather_();
     case 'rss':        return getRss_();
     case 'photo':      return getPhoto_();
+    case 'energy':     return getEnergy_();   // Energia.gs
     case 'ping':       return { now: Date.now() };
     default: throw new Error('unknown action');
   }

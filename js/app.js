@@ -18,7 +18,8 @@
       tasks: 60e3,
       calendar: 10 * 60e3,
       weather: 30 * 60e3,
-      rss: 30 * 60e3
+      rss: 30 * 60e3,
+      energy: 30 * 60e3
     },
     forecastDays: 3,         // dies de previsió a la capçalera
     newsRotate: 20e3,        // canvi de pàgina de lectures
@@ -181,6 +182,7 @@
       showSetup();
       return;
     }
+    if (err && err.message === 'unknown action') return;   // backend antic: el bloc s'amaga sense error
     if (err) errors[source] = err.message;
     else { delete errors[source]; lastOk = new Date(); }
     var keys = Object.keys(errors);
@@ -212,6 +214,7 @@
     if (now.getMinutes() !== lastMinute) {
       lastMinute = now.getMinutes();
       $('clock').textContent = hm(now);
+      if (now.getMinutes() === 0 || !energy.renderedHour) renderEnergy();
       updateNight(now);
     }
     var k = dayKey(now);
@@ -235,6 +238,7 @@
   function updateNight(now) {
     var night = isNightHour(now.getHours()) && Date.now() > wakeUntil && !/[?&]day\b/.test(location.search);
     document.body.classList.toggle('night', night);
+    setLive(!night);
   }
 
   // De nit, el primer toc només desperta la pantalla.
@@ -562,7 +566,7 @@
   /* Lectures (RSS)                                                      */
   /* ------------------------------------------------------------------ */
 
-  var news = { items: [], page: 0, per: 3, items_by_id: [] };
+  var news = { items: [], page: 0, per: 2, items_by_id: [] };
 
   function loadRss() {
     api('rss', null, function (err, data) {
@@ -606,6 +610,107 @@
         (it.date ? ' <span>· ' + relTime(it.date) + '</span>' : '') + '</div><h3>' + esc(it.title) + '</h3>' +
         (it.summary ? '<p>' + esc(it.summary) + '</p>' : '') + '<small>Toca per tancar</small></div>', false);
     });
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* Vídeo en directe (YouTube)                                          */
+  /* ------------------------------------------------------------------ */
+
+  var live = { on: null };
+
+  function liveSrc(id) {
+    var base = /^UC[\w-]{22}$/.test(id)
+      ? 'https://www.youtube.com/embed/live_stream?channel=' + encodeURIComponent(id) + '&'
+      : 'https://www.youtube.com/embed/' + encodeURIComponent(id) + '?';
+    return base + 'autoplay=1&mute=1&playsinline=1&controls=1&rel=0&modestbranding=1&iv_load_policy=3';
+  }
+
+  // Encén o atura el vídeo (s'atura de nit per estalviar bateria i escalfor).
+  function setLive(on) {
+    var id = window.KAZOKU_VIDEO;
+    var box = $('live');
+    if (!box) return;
+    if (!id) { box.className = 'live hidden'; box.parentNode.className = 'panel side no-live'; return; }
+    if (live.on === on) return;
+    live.on = on;
+    box.className = 'live';
+    if (!on) {
+      box.innerHTML = '<div class="live-off"><b>映</b>En pausa fins al matí</div>';
+      return;
+    }
+    if (DEMO) {
+      box.innerHTML = '<div class="live-badge">EN DIRECTE</div><div class="live-off"><b>映</b>Vídeo de YouTube</div>';
+      return;
+    }
+    box.innerHTML = '<div class="live-badge">EN DIRECTE</div>' +
+      '<iframe src="' + esc(liveSrc(id)) + '" allow="autoplay; encrypted-media; picture-in-picture" ' +
+      'allowfullscreen playsinline webkit-playsinline frameborder="0" title="Directe"></iframe>';
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* Preu de la llum (PVPC)                                              */
+  /* ------------------------------------------------------------------ */
+
+  var energy = { data: null, renderedHour: null };
+  var TIERS = [
+    { cls: 'e-grn', label: 'Barat' },
+    { cls: 'e-yel', label: 'Mig' },
+    { cls: 'e-red', label: 'Car' }
+  ];
+
+  function loadEnergy() {
+    api('energy', null, function (err, data) {
+      if (!err && data && data.hours && data.hours.length) { energy.data = data; renderEnergy(); }
+    });
+  }
+
+  function euro(v) { return v.toFixed(3).replace('.', ','); }
+
+  // Agrupa hores consecutives del mateix nivell: [[19,22]] → "19–23h"
+  function runsOf(hours, tier) {
+    var runs = [], cur = null;
+    hours.forEach(function (x) {
+      if (x.t === tier) {
+        if (cur && x.h === cur[1] + 1) cur[1] = x.h;
+        else { cur = [x.h, x.h]; runs.push(cur); }
+      } else cur = null;
+    });
+    return runs;
+  }
+
+  function renderEnergy() {
+    var box = $('energy');
+    var d = energy.data;
+    if (!d) return;
+    var now = new Date();
+    if (d.day !== dayKey(now)) { energy.data = null; box.className = 'energy hidden'; loadEnergy(); return; }
+    var h = now.getHours();
+    energy.renderedHour = h;
+
+    var current = null;
+    var strip = '';
+    d.hours.forEach(function (x) {
+      if (x.h === h) current = x;
+      strip += '<span class="' + TIERS[x.t].cls + (x.h < h ? ' past' : x.h === h ? ' now' : '') + '"></span>';
+    });
+
+    var legend = '';
+    for (var t = 2; t >= 0; t--) {
+      var hs = d.hours.filter(function (x) { return x.t === t; });
+      if (!hs.length) continue;
+      var avg = hs.reduce(function (a, x) { return a + x.p; }, 0) / hs.length;
+      var runs = runsOf(d.hours, t);
+      var txt = runs.slice(0, 3).map(function (r) { return r[0] + '–' + (r[1] + 1) + 'h'; }).join(', ') + (runs.length > 3 ? '…' : '');
+      legend += '<div class="e-row"><i class="' + TIERS[t].cls + '"></i><span class="l">' + TIERS[t].label +
+        '</span><span class="h">' + txt + '</span><span class="p">' + euro(avg) + '</span></div>';
+    }
+
+    box.innerHTML = '<div class="e-head"><h3>Llum</h3><span class="kanji">電</span>' +
+      (current ? '<span class="e-now"><i class="' + TIERS[current.t].cls + '"></i>Ara<b>' + euro(current.p) + '</b> €/kWh</span>' : '') +
+      '</div><div class="e-strip">' + strip + '</div>' +
+      '<div class="e-ticks"><span>0</span><span>6</span><span>12</span><span>18</span><span>24</span></div>' +
+      '<div class="e-legend">' + legend + '</div>';
+    box.className = 'energy';
   }
 
   /* ------------------------------------------------------------------ */
@@ -689,6 +794,7 @@
     every(SETTINGS.refresh.calendar, loadCalendar);
     every(SETTINGS.refresh.weather, loadWeather);
     every(SETTINGS.refresh.rss, loadRss);
+    every(SETTINGS.refresh.energy, loadEnergy);
     every(60e3, function () { if (Date.now() >= photo.nextAt) loadPhoto(); });
 
     // Quan l'iPad torna de repòs o es reactiva la pestanya, es refresca tot.
