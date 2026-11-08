@@ -19,7 +19,8 @@
       calendar: 10 * 60e3,
       weather: 30 * 60e3,
       rss: 30 * 60e3,
-      energy: 30 * 60e3
+      energy: 30 * 60e3,
+      scenes: 30 * 60e3
     },
     forecastDays: 3,         // dies de previsió a la capçalera
     newsRotate: 20e3,        // canvi de pàgina de lectures
@@ -613,6 +614,43 @@
   }
 
   /* ------------------------------------------------------------------ */
+  /* Casa: escenes de Smart Life                                         */
+  /* ------------------------------------------------------------------ */
+
+  var scenes = [];
+
+  function loadScenes() {
+    api('scenes', null, function (err, data) {
+      if (err || !data || data.none) return;
+      scenes = data.scenes || [];
+      renderScenes();
+    });
+  }
+
+  function renderScenes() {
+    var box = $('home');
+    if (!scenes.length) { box.className = 'home hidden'; return; }
+    var html = '<div class="home-head"><h3>Casa</h3><span class="kanji">家</span></div><div class="home-grid">';
+    scenes.forEach(function (sc) {
+      html += '<button class="scene" data-id="' + esc(sc.id) + '">' + esc(sc.name) + '</button>';
+    });
+    box.innerHTML = html + '</div>';
+    box.className = 'home';
+  }
+
+  function initScenes() {
+    on($('home'), 'click', function (e) {
+      var b = closest(e.target, 'scene', this);
+      if (!b || b.className.indexOf('busy') >= 0) return;
+      b.className = 'scene busy';
+      api('runScene', { id: b.getAttribute('data-id') }, function (err) {
+        b.className = 'scene ' + (err ? 'err' : 'ok');
+        setTimeout(function () { b.className = 'scene'; }, err ? 3000 : 1500);
+      });
+    });
+  }
+
+  /* ------------------------------------------------------------------ */
   /* Vídeo en directe (YouTube)                                          */
   /* ------------------------------------------------------------------ */
 
@@ -787,6 +825,7 @@
     initTasks();
     initNews();
     initOverlay();
+    initScenes();
     renderCalendar();
 
     every(1000, tick);
@@ -795,6 +834,7 @@
     every(SETTINGS.refresh.weather, loadWeather);
     every(SETTINGS.refresh.rss, loadRss);
     every(SETTINGS.refresh.energy, loadEnergy);
+    every(SETTINGS.refresh.scenes, loadScenes);
     every(60e3, function () { if (Date.now() >= photo.nextAt) loadPhoto(); });
 
     // Quan l'iPad torna de repòs o es reactiva la pestanya, es refresca tot.

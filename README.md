@@ -89,6 +89,7 @@ Els mòbils de la família poden fer servir la mateixa adreça per afegir i marc
 | Lectures | cada 30 min | Gira cada 20 s. Toca un titular per llegir-ne el resum |
 | Vídeo en directe | continu | YouTube, sense so. S'atura de nit. Es canvia a `js/config.js` (`KAZOKU_VIDEO`) |
 | Preu de la llum | cada 30 min | PVPC 2.0TD de Red Eléctrica. Terços del dia: verd barat, groc mig, vermell car |
+| Casa | cada 30 min | Botons amb les escenes "Toca per executar" de Smart Life (Tuya). Configuració a `apps-script/Smartlife.gs` |
 
 - **Mode nit** de 23:00 a 7:00: tons foscos i foto atenuada. El primer toc el desperta 5 minuts.
 - **Recàrrega preventiva** cada 6 hores, per evitar fuites de memòria del Safari d'iOS 12.

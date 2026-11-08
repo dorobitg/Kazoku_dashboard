@@ -92,6 +92,12 @@
         ] };
       case 'photo':
         return { url: 'img/placeholder.svg', taken: '2024:08:14 10:22:01', period: Math.floor(Date.now() / 864e5), hours: 24 };
+      case 'scenes':
+        return { scenes: [
+          { id: 's1', name: 'Llums sala' }, { id: 's2', name: 'Apagar-ho tot' },
+          { id: 's3', name: 'Sopar' }, { id: 's4', name: 'Bona nit' }
+        ] };
+      case 'runScene': return { ok: true, id: p.id };
       case 'energy':
         // Corba típica d'un dia de tardor (€/kWh)
         var curve = [0.112, 0.104, 0.098, 0.094, 0.093, 0.097, 0.118, 0.142, 0.151, 0.138, 0.121, 0.109,

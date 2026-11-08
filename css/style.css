@@ -237,6 +237,24 @@ button { background: none; border: 0; padding: 0; cursor: pointer; -webkit-appea
 }
 .task-del.arm { background: var(--shu); color: var(--paper-2); font-size: 13px; font-weight: 700; }
 
+/* ---------- Casa (escenes de Smart Life) ---------- */
+
+.home { flex: 0 0 auto; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line-2); }
+.home-head { display: flex; align-items: baseline; margin-bottom: 8px; }
+.home-head h3 { margin: 0; font: 16px/1 var(--display); }
+.home-head .kanji { font: 13px/1 var(--display); color: var(--shu); margin-left: 6px; }
+.home-grid { display: grid; grid-template-columns: 1fr 1fr; grid-gap: 8px; }
+.scene {
+  position: relative; min-height: 44px; padding: 8px 10px; border-radius: 6px; text-align: left;
+  border: 2px solid var(--sumi); font-size: 15px; font-weight: 700; line-height: 1.2;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  transition: background-color .25s, color .25s, border-color .25s;
+}
+.scene:active { background: var(--paper-2); }
+.scene.busy { opacity: 0.55; }
+.scene.ok { background: var(--asagi); border-color: var(--asagi); color: var(--paper-2); }
+.scene.err { background: var(--shu); border-color: var(--shu); color: var(--paper-2); }
+
 /* ---------- Foto + lectures ---------- */
 
 .side { display: grid; grid-template-rows: auto minmax(0, 1fr) auto minmax(0, 0.85fr); min-height: 0; }

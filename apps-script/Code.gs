@@ -72,6 +72,8 @@ function route_(p) {
     case 'rss':        return getRss_();
     case 'photo':      return getPhoto_();
     case 'energy':     return getEnergy_();   // Energia.gs
+    case 'scenes':     return getScenes_();   // Smartlife.gs
+    case 'runScene':   return runScene_(p.id);
     case 'ping':       return { now: Date.now() };
     default: throw new Error('unknown action');
   }
