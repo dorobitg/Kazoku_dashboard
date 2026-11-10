@@ -120,10 +120,17 @@ button { background: none; border: 0; padding: 0; cursor: pointer; -webkit-appea
 
 .weather { display: flex; align-items: flex-end; justify-content: flex-end; padding-bottom: 4px; padding-left: 20px; white-space: nowrap; }
 .w-now { display: flex; align-items: center; padding-right: 18px; margin-right: 10px; border-right: 1px solid var(--line-2); }
-.w-kanji {
-  width: 58px; height: 58px; flex: 0 0 auto; border: 2px solid var(--asagi); border-radius: 50%;
-  color: var(--asagi-d); font: 30px/54px var(--display); text-align: center; margin-right: 12px;
-}
+.w-icon { width: 60px; height: 60px; flex: 0 0 auto; margin-right: 12px; }
+.wi { display: block; width: 100%; height: 100%; overflow: visible; }
+.wi-sun { fill: var(--shu); }
+.wi-ray { stroke: var(--shu); stroke-width: 2.2; stroke-linecap: round; }
+.wi-moon { fill: var(--kincha); }
+.wi-cloud { fill: var(--paper-2); stroke: var(--sumi); stroke-width: 2; stroke-linejoin: round; }
+.wi-fog { stroke: var(--sumi-2); stroke-width: 2.4; stroke-linecap: round; }
+.wi-rain { stroke: var(--asagi-d); stroke-width: 2.4; stroke-linecap: round; }
+.wi-drop { fill: var(--asagi-d); }
+.wi-snow line { stroke: var(--asagi-d); stroke-width: 1.6; stroke-linecap: round; }
+.wi-bolt { fill: var(--kincha); stroke: var(--sumi); stroke-width: 1; stroke-linejoin: round; }
 .w-temp { font: 48px/0.9 var(--display); }
 .w-temp sup { font-size: 24px; vertical-align: top; position: relative; top: 4px; }
 .w-desc { font-size: 14px; color: var(--sumi-2); margin-top: 6px; font-weight: 500; max-width: 140px; overflow: hidden; text-overflow: ellipsis; }
@@ -131,7 +138,7 @@ button { background: none; border: 0; padding: 0; cursor: pointer; -webkit-appea
 .w-days { display: flex; }
 .w-day { text-align: center; width: 48px; }
 .w-day .d { font-size: 13px; color: var(--sumi-2); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
-.w-day .k { font: 22px/1.5 var(--display); color: var(--asagi-d); }
+.w-day .k { width: 30px; height: 30px; margin: 3px auto; }
 .w-day .t { font-size: 13px; font-weight: 700; }
 .w-day .t span { color: var(--sumi-2); font-weight: 400; }
 

@@ -35,18 +35,58 @@
                 'setembre', 'octubre', 'novembre', 'desembre'];
   var CAL_COLORS = ['var(--shu)', 'var(--asagi)', 'var(--sumi)', 'var(--kincha)', 'var(--sumi-2)'];
 
+  // [descripció, icona]
   var WMO = {
-    0: ['Serè', '晴'], 1: ['Gairebé serè', '晴'], 2: ['Mig ennuvolat', '曇'], 3: ['Ennuvolat', '曇'],
-    45: ['Boira', '霧'], 48: ['Boira gebradora', '霧'],
-    51: ['Plugim feble', '雨'], 53: ['Plugim', '雨'], 55: ['Plugim intens', '雨'],
-    56: ['Plugim gelat', '雨'], 57: ['Plugim gelat', '雨'],
-    61: ['Pluja feble', '雨'], 63: ['Pluja', '雨'], 65: ['Pluja intensa', '雨'],
-    66: ['Pluja gelada', '雨'], 67: ['Pluja gelada', '雨'],
-    71: ['Neu feble', '雪'], 73: ['Neu', '雪'], 75: ['Neu intensa', '雪'], 77: ['Neu granulada', '雪'],
-    80: ['Ruixats', '雨'], 81: ['Ruixats', '雨'], 82: ['Ruixats forts', '雨'],
-    85: ['Ruixats de neu', '雪'], 86: ['Ruixats de neu', '雪'],
-    95: ['Tempesta', '雷'], 96: ['Tempesta i calamarsa', '雷'], 99: ['Tempesta i calamarsa', '雷']
+    0: ['Serè', 'sun'], 1: ['Gairebé serè', 'sun'], 2: ['Mig ennuvolat', 'partly'], 3: ['Ennuvolat', 'cloud'],
+    45: ['Boira', 'fog'], 48: ['Boira gebradora', 'fog'],
+    51: ['Plugim feble', 'drizzle'], 53: ['Plugim', 'drizzle'], 55: ['Plugim intens', 'drizzle'],
+    56: ['Plugim gelat', 'drizzle'], 57: ['Plugim gelat', 'drizzle'],
+    61: ['Pluja feble', 'rain'], 63: ['Pluja', 'rain'], 65: ['Pluja intensa', 'rain'],
+    66: ['Pluja gelada', 'rain'], 67: ['Pluja gelada', 'rain'],
+    71: ['Neu feble', 'snow'], 73: ['Neu', 'snow'], 75: ['Neu intensa', 'snow'], 77: ['Neu granulada', 'snow'],
+    80: ['Ruixats', 'rain'], 81: ['Ruixats', 'rain'], 82: ['Ruixats forts', 'rain'],
+    85: ['Ruixats de neu', 'snow'], 86: ['Ruixats de neu', 'snow'],
+    95: ['Tempesta', 'storm'], 96: ['Tempesta i calamarsa', 'storm'], 99: ['Tempesta i calamarsa', 'storm']
   };
+
+  // Icones del temps (SVG, viewBox 32×32). Colors definits a style.css (.wi-*).
+  var CLOUD = '<path class="wi-cloud" d="M9.5 25h13a5 5 0 0 0 .6-9.96A7 7 0 0 0 9.9 16.3 4.4 4.4 0 0 0 9.5 25z"/>';
+  var CLOUD_UP = '<path class="wi-cloud" d="M9.5 20h13a5 5 0 0 0 .6-9.96A7 7 0 0 0 9.9 11.3 4.4 4.4 0 0 0 9.5 20z"/>';
+  var RAYS = function (cx, cy, r1, r2) {
+    var out = '';
+    for (var a = 0; a < 8; a++) {
+      var t = a * Math.PI / 4, c = Math.cos(t), sn = Math.sin(t);
+      out += '<line class="wi-ray" x1="' + (cx + c * r1).toFixed(1) + '" y1="' + (cy + sn * r1).toFixed(1) +
+        '" x2="' + (cx + c * r2).toFixed(1) + '" y2="' + (cy + sn * r2).toFixed(1) + '"/>';
+    }
+    return out;
+  };
+  var FLAKE = function (cx, cy) {
+    var out = '';
+    for (var a = 0; a < 3; a++) {
+      var t = a * Math.PI / 3, c = Math.cos(t) * 2.3, sn = Math.sin(t) * 2.3;
+      out += '<line x1="' + (cx - c).toFixed(1) + '" y1="' + (cy - sn).toFixed(1) + '" x2="' + (cx + c).toFixed(1) + '" y2="' + (cy + sn).toFixed(1) + '"/>';
+    }
+    return out;
+  };
+  var ICONS = {
+    sun: '<circle class="wi-sun" cx="16" cy="16" r="6.5"/>' + RAYS(16, 16, 9.5, 13),
+    moon: '<path class="wi-moon" d="M19.5 5.5a10.5 10.5 0 1 0 7 17.6A9 9 0 0 1 19.5 5.5z"/>',
+    partly: '<circle class="wi-sun" cx="11" cy="11" r="5"/>' + RAYS(11, 11, 7.2, 9.6) + CLOUD,
+    partlyNight: '<path class="wi-moon" d="M12 3.5a7.5 7.5 0 1 0 6 12A6.5 6.5 0 0 1 12 3.5z"/>' + CLOUD,
+    cloud: CLOUD,
+    fog: '<line class="wi-fog" x1="5" y1="11" x2="27" y2="11"/><line class="wi-fog" x1="8" y1="16" x2="24" y2="16"/>' +
+      '<line class="wi-fog" x1="5" y1="21" x2="27" y2="21"/><line class="wi-fog" x1="10" y1="26" x2="22" y2="26"/>',
+    drizzle: CLOUD_UP + '<circle class="wi-drop" cx="11" cy="25" r="1.4"/><circle class="wi-drop" cx="16" cy="27.5" r="1.4"/><circle class="wi-drop" cx="21" cy="25" r="1.4"/>',
+    rain: CLOUD_UP + '<line class="wi-rain" x1="11" y1="23" x2="9" y2="28"/><line class="wi-rain" x1="16.5" y1="23" x2="14.5" y2="28"/><line class="wi-rain" x1="22" y1="23" x2="20" y2="28"/>',
+    snow: CLOUD_UP + '<g class="wi-snow">' + FLAKE(10, 25.5) + FLAKE(16, 28.5) + FLAKE(22, 25.5) + '</g>',
+    storm: CLOUD_UP + '<path class="wi-bolt" d="M17.5 19.5l-5 6.5h4l-2 5 6-7.5h-4l2-4z"/>'
+  };
+
+  function icon(name) {
+    return '<svg class="wi" viewBox="0 0 32 32" aria-hidden="true">' + (ICONS[name] || ICONS.cloud) + '</svg>';
+  }
+
 
   /* ------------------------------------------------------------------ */
   /* Utilitats                                                           */
@@ -265,8 +305,9 @@
   }
 
   function wmo(code, isDay) {
-    var w = WMO[code] || ['—', '天'];
-    if (isDay === false && code <= 1) return [w[0], '夜'];
+    var w = WMO[code] || ['—', 'cloud'];
+    if (isDay === false && w[1] === 'sun') return [w[0], 'moon'];
+    if (isDay === false && w[1] === 'partly') return [w[0], 'partlyNight'];
     return w;
   }
 
@@ -274,7 +315,7 @@
     if (!weather) return;
     var n = weather.now, w = wmo(n.code, n.day);
     var today = weather.days && weather.days[0];
-    var html = '<div class="w-now"><div class="w-kanji">' + w[1] + '</div><div>' +
+    var html = '<div class="w-now"><div class="w-icon">' + icon(w[1]) + '</div><div>' +
       '<div class="w-temp">' + Math.round(n.temp) + '<sup>°</sup></div>' +
       '<div class="w-desc">' + esc(w[0]) + '</div>' +
       (today ? '<div class="w-desc w-range">' + Math.round(today.max) + '° · ' + Math.round(today.min) + '°</div>' : '') +
@@ -286,7 +327,7 @@
       if (!dt || dayKey(dt) <= todayKey || count >= SETTINGS.forecastDays) return;
       count++;
       html += '<div class="w-day"><div class="d">' + DAYS_AB[dt.getDay()] + '</div>' +
-        '<div class="k">' + wmo(d.code)[1] + '</div>' +
+        '<div class="k">' + icon(wmo(d.code)[1]) + '</div>' +
         '<div class="t">' + Math.round(d.max) + '° <span>' + Math.round(d.min) + '°</span></div></div>';
     });
     $('weather').innerHTML = html + '</div>';
